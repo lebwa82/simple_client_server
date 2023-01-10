@@ -9,8 +9,17 @@
 #include <unistd.h>
 #include <time.h>
 
+#include <signal.h>
+
+void listener(int sig) 
+{
+    printf("SIGPIPE: %d\n", sig);
+    exit(0);
+}
 
 int main() {
+    signal(SIGPIPE, listener);
+
     srand(time(NULL));
     int random, sleep_sleep, nomer = rand()%10+1;
     char server_message[256];
@@ -36,16 +45,17 @@ int main() {
         return 1;
     }
 
-    while(1)
+    int rc = 1;
+    while(rc)
     {
         sleep_sleep = rand()%5;
         sleep(sleep_sleep);
         random = rand()%100;
         // send data
         sprintf(server_message, "client %d sleep %d number %d", nomer, sleep_sleep, random);
-        int rc = send(network_socket, server_message, sizeof(server_message), 0);
-        if (rc < -1) {
-            perror("send error");
+        rc = send(network_socket, server_message, sizeof(server_message), 0);
+        if (rc <= 0) {
+            perror("send error\n");
             return 1;
         }
     }
