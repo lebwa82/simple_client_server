@@ -12,7 +12,7 @@
 
 int main() {
     srand(time(NULL));
-    int random, sleep_sleep;
+    int random, sleep_sleep, nomer = rand()%10+1;
     char server_message[256];
 
     // create a socket
@@ -42,7 +42,7 @@ int main() {
         sleep(sleep_sleep);
         random = rand()%100;
         // send data
-        sprintf(server_message, "client 2 sleep %d number %d", sleep_sleep, random);
+        sprintf(server_message, "client %d sleep %d number %d", nomer, sleep_sleep, random);
         int rc = send(network_socket, server_message, sizeof(server_message), 0);
         if (rc < -1) {
             perror("send error");
